@@ -22,6 +22,11 @@
                         <!-- /.panel-heading -->
                         <div class="panel-body">
                             <form role="form" action="modify" method="post">
+                            	<!-- 추가 -->
+                            	<input type='hidden' name='pageNum' value='<c:out value="${cri.pageNum }"/>'>
+                            	<input type='hidden' name='amount' value='<c:out value="${cri.amount }"/>'>
+                            	
+                            	
 	                            <div class="form-group">
 	                           		<label>Bno</label> 
 	                           		<input class="form-control" name='bno' value='<c:out value="${board.bno}"/>' readonly="readonly">
@@ -83,8 +88,16 @@ $(document).ready(function(){
 			//before
 			//self.location ="/board/list";
 			//return;
+			
 			formObj.attr("action", "/board/list").attr("method","get");
+			//add
+			var pageNumTag= $("input[name='pageNum']").clone();
+			var amountTag= $("input[name='amount']").clone();
+			
 			formObj.empty();
+			//add
+			formObj.append(pageNumTag);
+			formObj.append(amountTag);
 		}
 		formObj.submit();
 	});
