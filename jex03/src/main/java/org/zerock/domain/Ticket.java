@@ -1,5 +1,12 @@
 package org.zerock.domain;
 
-public class Ticket {
+import lombok.Data;
 
+@Data
+public class Ticket {
+	private int tno;
+	private String owner;
+	private String grade;
+	
+	
 }
