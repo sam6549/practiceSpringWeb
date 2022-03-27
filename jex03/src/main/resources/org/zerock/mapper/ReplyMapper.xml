@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatic.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.zerock.mapper.ReplyMapper">
+
+	<select id="getList" resultType="org.zerock.domain.BoardVO">
+	
+		<![CDATA[
+			SELECT * FROM TBL_BOARD WHERE BNO >0 ORDER BY BNO DESC
+		]]>
+	
+	</select>
+	
+	<!-- 페이징처리 적용  
+	<select id="getListWithPaging" resultType="org.zerock.domain.BoardVO">
+	
+		<![CDATA[
+			SELECT BNO, TITLE, CONTENT, WRITER, REGDATE, UPDATEDATE
+			FROM (SELECT	/*+INDEX_DESC(TBL_BOARD PK_BOARD) */
+							ROWNUM RN, BNO, TITLE, CONTENT, WRITER, REGDATE, UPDATEDATE
+					FROM TBL_BOARD
+				 	WHERE ROWNUM <= #{pageNum} * #{amount}
+				 )
+			WHERE RN > (#{pageNum}-1) * #{amount}
+		]]>
+	
+	</select>
+	-->
+	<!-- 검색페이지 적용 -->
+	<!-- 
+	<select id="getListWithPaging" resultType="org.zerock.domain.BoardVO">
+	
+		<![CDATA[
+			SELECT BNO, TITLE, CONTENT, WRITER, REGDATE, UPDATEDATE
+			FROM (SELECT	/*+INDEX_DESC(TBL_BOARD PK_BOARD) */
+							ROWNUM RN, BNO, TITLE, CONTENT, WRITER, REGDATE, UPDATEDATE
+					FROM TBL_BOARD
+				 	WHERE 1=1
+		]]>
+		
+		<trim prefix="AND (" suffix=") AND " prefixOverrides="OR">
+			<foreach item='type' collection="typeArr">
+				<trim prefix="OR">
+					<choose>
+						<when test="type == 'T'.toString()">
+							TITLE LIKE '%' || #{keyword} || '%'
+						</when>
+						<when test="type == 'C'.toString()">
+							CONTENT LIKE '%' || #{keyword} || '%'
+						</when>
+						<when test="type == 'W'.toString()">
+							WRITER LIKE '%' || #{keyword} || '%'
+						</when>
+					</choose>
+				</trim>
+			</foreach>
+		</trim> 
+		
+		<![CDATA[
+				ROWNUM <= #{pageNum} * #{amount}
+				)
+			WHERE RN > (#{pageNum} -1) * #{amount}
+		]]>
+	</select>
+	 -->
+	 
+	<sql id="criteria">
+		<trim prefix="AND (" suffix=") AND " prefixOverrides="OR">
+			<foreach item='type' collection="typeArr">
+				<trim prefix="OR">
+					<choose>
+						<when test="type == 'T'.toString()">
+							TITLE LIKE '%' || #{keyword} || '%'
+						</when>
+						<when test="type == 'C'.toString()">
+							CONTENT LIKE '%' || #{keyword} || '%'
+						</when>
+						<when test="type == 'W'.toString()">
+							WRITER LIKE '%' || #{keyword} || '%'
+						</when>
+					</choose>
+				</trim>
+			</foreach>
+		</trim>
+	</sql>
+	
+	<sql id="and">
+		<if test="type == null || type == ''">
+			AND
+		</if>
+	</sql>
+	
+	<select id="getListWithPaging" resultType="org.zerock.domain.BoardVO">
+	
+		<![CDATA[
+			SELECT BNO, TITLE, CONTENT, WRITER, REGDATE, UPDATEDATE
+			FROM (SELECT	/*+INDEX_DESC(TBL_BOARD PK_BOARD) */
+							ROWNUM RN, BNO, TITLE, CONTENT, WRITER, REGDATE, UPDATEDATE
+					FROM TBL_BOARD
+				 	WHERE 1=1
+		]]>
+		
+		<include refid="criteria"></include>
+		<include refid="and"></include>
+		
+		<![CDATA[
+				 ROWNUM <= #{pageNum} * #{amount}
+				)
+			WHERE RN > (#{pageNum} -1) * #{amount}
+		]]>
+		
+	
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO TBL_BOARD (BNO, TITLE, CONTENT, WRITER)
+		VALUES (SEQ_BOARD.NEXTVAL, #{title}, #{content}, #{writer})
+	</insert> 
+	
+	<insert id= "insertSelectKey">
+		<selectKey keyProperty="bno" order="BEFORE"	resultType="long">
+			SELECT SEQ_BOARD.NEXTVAL FROM DUAL
+		</selectKey>
+		
+		INSERT INTO TBL_BOARD (BNO, TITLE, CONTENT, WRITER)
+		VALUES (#{bno}, #{title}, #{content}, #{writer})
+	</insert>
+	
+	<select id="read" resultType="org.zerock.domain.BoardVO">
+		SELECT * FROM TBL_BOARD WHERE BNO = #{bno}
+	</select>
+	
+	<delete id="delete">
+		DELETE FROM TBL_BOARD WHERE BNO = #{bno}
+	</delete>
+	
+	<update id="update">
+		UPDATE TBL_BOARD SET 
+				TITLE=#{title},
+				CONTENT = #{content},
+				WRITER = #{writer},
+				UPDATEDATE = SYSDATE
+				WHERE BNO = #{bno}
+	</update>
+	
+	<!-- 
+	<select id="getTotalCount" resultType="int">
+		SELECT COUNT(*) FROM TBL_BOARD WHERE BNO > 0
+	</select>
+	 -->
+	<select id="getTotalCount" resultType="int">
+		SELECT COUNT(*) 
+		  FROM TBL_BOARD 
+		 WHERE 1=1
+		 
+		 <include refid="criteria"></include>
+		 <include refid="and"></include>
+		 
+		  BNO > 0
+	</select>
+	
+</mapper>
