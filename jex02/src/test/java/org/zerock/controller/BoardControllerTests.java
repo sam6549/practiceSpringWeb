@@ -37,7 +37,7 @@ public class BoardControllerTests {
 	}
 	
 //	@Test
-//	public void testList() throws Exception{
+//	public void testList() throws Exception{ 
 //		log.info(
 //				mockMvc.perform(MockMvcRequestBuilders.get("/board/list"))
 //				.andReturn()
