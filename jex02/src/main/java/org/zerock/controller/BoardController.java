@@ -87,8 +87,14 @@ public class BoardController {
 		
 		rttr.addAttribute("pageNum", cri.getPageNum());
 		rttr.addAttribute("amount", cri.getAmount());
+		//추가
+		rttr.addAttribute("type", cri.getType());
+		rttr.addAttribute("keyword", cri.getKeyword());
 		
 		return "redirect:/board/list";
+		
+		//자바스크립트 안될 경우에 추가할 수 있음
+		//return "redirect:/board/list" + cri.getListLink();
 	}
 	
 //	@PostMapping("/remove")
@@ -112,8 +118,14 @@ public class BoardController {
 		}
 		rttr.addAttribute("pageNum", cri.getPageNum());
 		rttr.addAttribute("amount", cri.getAmount());
+		//추가
+		rttr.addAttribute("type", cri.getType());
+		rttr.addAttribute("keyword", cri.getKeyword());
 		
 		return "redirect:/board/list";
+		
+		//자바스크립트 안될 경우에 추가할 수 있음
+		//return "redirect:/board/list" + cri.getListLink();
 	}
 	
 	
