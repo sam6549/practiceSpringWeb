@@ -1,6 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatic.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.zerock.mapper.ReplyMapper">
+	<insert id="insert">
+		INSERT INTO TBL_REPLY (RNO, BNO, REPLY, REPLYER)
+		VALUES (SEQ_REPLY.NEXTVAL, #{bno}, #{reply}, #{replyer})
+	</insert> 
+	
+	<select id="read" resultType="org.zerock.domain.ReplyVO">
+		SELECT * FROM TBL_REPLY WHERE RNO = #{rno}
+	</select>
+
+	<delete id="delete">
+		DELETE FROM TBL_REPLY WHERE RNO = #{rno}
+	</delete>
+
+	<update id="update">
+		UPDATE TBL_REPLY SET 
+				REPLY=#{reply},
+				UPDATEDATE = SYSDATE
+				
+				WHERE RNO = #{rno}
+	</update>
+
+
+
+
+
+
+
+
+
+
+
+
 
 	<select id="getList" resultType="org.zerock.domain.BoardVO">
 	
@@ -110,11 +142,7 @@
 		
 	
 	</select>
-	
-	<insert id="insert">
-		INSERT INTO TBL_BOARD (BNO, TITLE, CONTENT, WRITER)
-		VALUES (SEQ_BOARD.NEXTVAL, #{title}, #{content}, #{writer})
-	</insert> 
+
 	
 	<insert id= "insertSelectKey">
 		<selectKey keyProperty="bno" order="BEFORE"	resultType="long">
@@ -125,22 +153,11 @@
 		VALUES (#{bno}, #{title}, #{content}, #{writer})
 	</insert>
 	
-	<select id="read" resultType="org.zerock.domain.BoardVO">
-		SELECT * FROM TBL_BOARD WHERE BNO = #{bno}
-	</select>
+
 	
-	<delete id="delete">
-		DELETE FROM TBL_BOARD WHERE BNO = #{bno}
-	</delete>
+
 	
-	<update id="update">
-		UPDATE TBL_BOARD SET 
-				TITLE=#{title},
-				CONTENT = #{content},
-				WRITER = #{writer},
-				UPDATEDATE = SYSDATE
-				WHERE BNO = #{bno}
-	</update>
+
 	
 	<!-- 
 	<select id="getTotalCount" resultType="int">
