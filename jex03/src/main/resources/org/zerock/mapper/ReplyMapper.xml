@@ -22,8 +22,19 @@
 				WHERE RNO = #{rno}
 	</update>
 
-
-
+	<select id="getListWithPaging" resultType="org.zerock.domain.ReplyVO">
+	
+		<![CDATA[
+			SELECT	RNO, BNO, REPLY, REPLYER, REPLYDATE, UPDATEDATE
+			FROM TBL_REPLY
+		   WHERE 1=1
+		     AND BNO = #{bno}
+	ORDER BY RNO ASC
+		]]>
+		
+	
+	</select>
+	
 
 
 
@@ -121,27 +132,7 @@
 		</if>
 	</sql>
 	
-	<select id="getListWithPaging" resultType="org.zerock.domain.BoardVO">
 	
-		<![CDATA[
-			SELECT BNO, TITLE, CONTENT, WRITER, REGDATE, UPDATEDATE
-			FROM (SELECT	/*+INDEX_DESC(TBL_BOARD PK_BOARD) */
-							ROWNUM RN, BNO, TITLE, CONTENT, WRITER, REGDATE, UPDATEDATE
-					FROM TBL_BOARD
-				 	WHERE 1=1
-		]]>
-		
-		<include refid="criteria"></include>
-		<include refid="and"></include>
-		
-		<![CDATA[
-				 ROWNUM <= #{pageNum} * #{amount}
-				)
-			WHERE RN > (#{pageNum} -1) * #{amount}
-		]]>
-		
-	
-	</select>
 
 	
 	<insert id= "insertSelectKey">

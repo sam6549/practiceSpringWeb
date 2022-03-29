@@ -7,8 +7,8 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.zerock.domain.BoardVO;
 import org.zerock.domain.Criteria;
+import org.zerock.domain.ReplyVO;
 
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
@@ -18,7 +18,7 @@ import lombok.extern.log4j.Log4j;
 @Log4j
 public class ReplyMapperTests {
 	@Setter(onMethod_ = @Autowired)
-	private BoardMapper mapper;
+	private ReplyMapper mapper;
 	
 //	@Test
 //	public void testGetList() {
@@ -83,27 +83,37 @@ public class ReplyMapperTests {
 //		list.forEach(board -> log.info(board));
 //	}
 	
-	@Test
-	public void testSearch() {
-		Criteria cri = new Criteria();
-		cri.setKeyword("새로");
-		cri.setType("TC");
-		
-		List<BoardVO> list = mapper.getListWithPaging(cri);
-		
-		list.forEach(board -> log.info(board));
-	}
+//	@Test
+//	public void testSearch() {
+//		Criteria cri = new Criteria();
+//		cri.setKeyword("새로");
+//		cri.setType("TC");
+//		
+//		List<BoardVO> list = mapper.getListWithPaging(cri);
+//		
+//		list.forEach(board -> log.info(board));
+//	}
+//	
+//	@Test
+//	public void testSearchCount() {
+//		Criteria cri = new Criteria();
+//		cri.setKeyword("새로");
+//		cri.setType("TC");
+//		
+//		int count = mapper.getTotalCount(cri);
+//		
+//		log.info(" COUNT: "+ count);
+//		
+//	}
 	
 	@Test
-	public void testSearchCount() {
+	public void testList() {
 		Criteria cri = new Criteria();
-		cri.setKeyword("새로");
-		cri.setType("TC");
+		//3145745L
+		//List<ReplyVO> replies = mapper.getListWithPaging(cri, bnoArr[0]);
+		List<ReplyVO> replies = mapper.getListWithPaging(cri, 3145745L);
 		
-		int count = mapper.getTotalCount(cri);
-		
-		log.info(" COUNT: "+ count);
-		
+		replies.forEach(reply -> log.info(reply));
 	}
 	
 	
