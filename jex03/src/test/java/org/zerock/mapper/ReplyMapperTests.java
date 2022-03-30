@@ -106,15 +106,24 @@ public class ReplyMapperTests {
 //		
 //	}
 	
-	@Test
-	public void testList() {
-		Criteria cri = new Criteria();
-		//3145745L
-		//List<ReplyVO> replies = mapper.getListWithPaging(cri, bnoArr[0]);
-		List<ReplyVO> replies = mapper.getListWithPaging(cri, 3145745L);
-		
-		replies.forEach(reply -> log.info(reply));
-	}
+//	@Test
+//	public void testList() {
+//		Criteria cri = new Criteria();
+//		//3145745L
+//		//List<ReplyVO> replies = mapper.getListWithPaging(cri, bnoArr[0]);
+//		List<ReplyVO> replies = mapper.getListWithPaging(cri, 3145745L);
+//		
+//		replies.forEach(reply -> log.info(reply));
+//	}
 	
+	@Test
+	public void testUpdate() {
+		Long targetRno = 10L;
+		ReplyVO vo = mapper.read(targetRno);
+		vo.setReply("upupupupupupup");
+		int count = mapper.update(vo);
+		
+		log.info("update Count: "+count);;
+	}
 	
 }
