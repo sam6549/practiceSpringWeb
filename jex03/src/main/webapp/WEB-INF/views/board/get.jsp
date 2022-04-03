@@ -67,9 +67,17 @@
             <div class="row">
                 <div class="col-lg-12">
                     <div class="panel panel-default">
+                    	<!-- 
                         <div class="panel-heading">
                             <i class="fa fa-comments fa-fw"></i>Reply
                         </div>
+                         -->
+                        <!-- New Reply button 추가 -->
+                        <div class="panel-heading">
+                            <i class="fa fa-comments fa-fw"></i>Reply
+                            <button id ='addReplyBtn' class ='btn btn-primary btn-xs pull-right'>New Reply</button>
+                        </div>
+                        
                         <!-- /.panel-heading -->
                         <div class="panel-body">
                             <ul class="chat">
@@ -97,6 +105,46 @@
             </div>
             <!-- /.row -->
             
+            <!-- Modal -->
+            <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title" id="myModalLabel">REPLY MODAL</h4>
+                        </div>
+                        <div class="modal-body">
+                        	
+                        	<div>
+                        		<label>Reply</label>
+                        		<input class="form-control" name='reply' value='New Reply!!!!'>
+                        	</div>
+                        	<div>
+                        		<label>Replyer</label>
+                        		<input class="form-control" name='replyer' value='replyer'>
+                        	</div>
+                        	<div>
+                        		<label>Reply Date</label>
+                        		<input class="form-control" name='replyDate' value=''>
+                        	</div>
+                            
+                        </div>
+                        <div class="modal-footer">
+                            <button id='modalModBtn' type="button" class="btn btn-warning" >Modify</button>
+                            <button id='modalRemoveBtn' type="button" class="btn btn-danger" >Remove</button>
+                            <button id='modalRegisterBtn' type="button" class="btn btn-primary" >Register</button>
+                            <button id='modalCloseBtn' type="button" class="btn btn-default" >Close</button>
+                            
+                            
+                            <button type="button" class="btn btn-primary">Save changes</button>
+                        </div>
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
+            </div>
+            <!-- /.modal -->
+            
 
 <script type="text/javascript" src="/resources/js/reply.js"></script>
 
@@ -104,11 +152,25 @@
 <script>
 
 $(document).ready(function(){
+	
+	var operForm = $("#operForm");
+	
+	$("button[data-oper='modify']").on("click", function(e){
+		operForm.attr("action","/board/modify").submit();
+	});
+	
+	$("button[data-oper='list']").on("click", function(e){
+		operForm.find("#bno").remove();
+		operForm.attr("action","/board/list")
+		operForm.submit();
+	});
+	
 	var bnoValue = '<c:out value="${board.bno}"/>';
 	var replyUL = $(".chat");
 	
 	showList(1);
 	
+	//댓글 목록 조회
 	function showList(page){
 		replyService.getList(
 				{bno:bnoValue,page:page||1},
@@ -132,6 +194,99 @@ $(document).ready(function(){
 					replyUL.html(str);
 		});//end function
 	}//end showList
+	
+	
+	var modal = $(".modal");
+	var modalInputReply = modal.find("input[name='reply']");
+	var modalInputReplyer = modal.find("input[name='replyer']");
+	var modalInputReplyDate = modal.find("input[name='replyDate']");
+	
+	var modalModBtn = $("#modalModBtn");
+	var modalRemoveBtn = $("#modalRemoveBtn");
+	var modalRegisterBtn = $("#modalRegisterBtn");
+	
+	
+	//New Reply 버튼을 누르면 댓글 modal open
+	$("#addReplyBtn").on("click", function(e){
+		modal.find("input").val("");
+		modalInputReplyDate.closest("div").hide();
+		modal.find("button[id != 'modalCloseBtn']").hide();
+		
+		modalRegisterBtn.show();
+		$(".modal").modal("show");
+	});
+	
+	
+	//modal의 register 버튼을 누르면 등록이 된다.
+	modalRegisterBtn.on("click",function(e){
+		
+		var reply = {
+				reply:modalInputReply.val(),
+				replyer:modalInputReplyer.val(),
+				bno:bnoValue
+		};
+		
+		replyService.add(reply,function(result){
+			alert(result);
+			
+			modal.find("input").val("");
+			modal.modal("hide");
+			
+			showList(1);
+		});
+		
+	});
+	
+	//클릭하면 댓글 상세 modal open
+	$(".chat").on("click", "li", function(e){
+		var rno = $(this).data("rno");
+		
+		console.log(".chat"+rno);
+		
+		replyService.get(rno, function(reply){
+			modalInputReply.val(reply.reply);
+			modalInputReplyer.val(reply.replyer);
+			modalInputReplyDate.val(replyService.displayTime(reply.replyDate)).attr("readonly","readonly");
+			modal.data("rno", reply.rno);
+			
+			modal.find("button[id !='modalCloseBtn']").hide();
+			modalModBtn.show();
+			modalRemoveBtn.show();
+			
+			$(".modal").modal("show");
+		});
+	});
+	
+	//modal의 modify 버튼을 누르면 등록이 된다.
+	modalModBtn.on("click",function(e){
+		
+		var reply = {
+				rno:modal.data("rno"),
+				reply:modalInputReply.val()
+		};
+		
+		replyService.update(reply,function(result){
+			alert(result);
+			modal.modal("hide");
+			showList(1);
+		});
+		
+	});
+	
+	//modal의 삭제 버튼을 누르면 등록이 된다.
+	modalRemoveBtn.on("click",function(e){
+		
+		var rno = modal.data("rno");
+		
+		replyService.remove(rno,function(result){
+			alert(result);
+			modal.modal("hide");
+			
+			showList(1);
+		});
+		
+	});
+	
 	
 });
 
