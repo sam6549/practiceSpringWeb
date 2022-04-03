@@ -133,7 +133,9 @@
                 <!-- /.col-lg-12 -->
             </div>
             <!-- /.row -->
-            
+
+
+
 <script type="text/javascript">
 
 $(document).ready(function(){
@@ -197,6 +199,8 @@ $(document).ready(function(){
 	});
 	
 });
+
+
 
 </script>            
 <%@include file="../includes/footer.jsp" %>

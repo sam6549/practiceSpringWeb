@@ -64,6 +64,142 @@
             </div>
             <!-- /.row -->
             
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-comments fa-fw"></i>Reply
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <ul class="chat">
+                            
+                            	<!--  start reply -->
+                            	<li class="left clearfix" data-rno='12'>
+                            		<div>
+                            			<div class="header">
+                            				<strong class="primary-font">user00</strong>
+                            				<small class="pull-right text-muted">2018-01-01 13:13</small>
+                            			</div>
+                            			<p>Good job!</p>
+                            		</div>
+                            	</li>
+                            	<!-- end reply -->
+                            	
+                            </ul>
+                            <!-- ./end ul -->
+                        </div>
+                        <!-- /.panel .chat-panel -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            <!-- /.row -->
+            
+
+<script type="text/javascript" src="/resources/js/reply.js"></script>
+
+<!-- 20220422 -->
+<script>
+
+$(document).ready(function(){
+	var bnoValue = '<c:out value="${board.bno}"/>';
+	var replyUL = $(".chat");
+	
+	showList(1);
+	
+	function showList(page){
+		replyService.getList(
+				{bno:bnoValue,page:page||1},
+				function(list){
+					var str="";
+					
+					if(list == null || list.length == 0){
+						replyUL.html("");
+						
+						return;
+					}
+					
+					for(var i = 0, len = list.length||0 ; i < len ; i++){
+						str +="<li class='left clearfix' data-rno='"+list[i].rno+"'>";
+						str +="	<div><div class='header'><strong class='primary-font'>" + list[i].replyer + "</strong>";
+						//replyService.displayTime() 함수로 시간 포맷 변경
+						str +="		<small class='pull-right text-muted'>" + replyService.displayTime(list[i].replyDate) + "</small></div>";
+						str +="		<p>" + list[i].reply + "</p></div></li>";
+					}
+					
+					replyUL.html(str);
+		});//end function
+	}//end showList
+	
+});
+
+</script>
+
+<!-- 20220402 reply.js test 
+<script>
+
+console.log("=========================");
+console.log("JS TEST");
+
+var bnoValue='<c:out value="${board.bno}" />';//board의 bno값을 받아옴
+
+
+//for replyService add test
+//replyService.add(
+//	//json으로 입력값 하드코딩
+//	{reply:"JS TEST", replyer:"tester", bno:bnoValue}
+//	,
+//	function(result){
+//		alert("RESULT: " + result);
+//	}
+//);
+
+//replyService.getList(
+//		{bno:bnoValue, page:1},
+//		function(list){
+//			for(var i = 0, len = list.length||0; i <len; i++){
+//				console.log(list[i]);
+//			}
+//		}
+//);
+
+//578번 댓글 삭제
+//replyService.remove(578, function(count) {
+//	console.log("remove............... count");
+//	console.log(count);
+//	
+//	if(count === "success"){
+//		alert("REMOVE");
+//	}
+//	
+//}, function(err){
+//	alert("ERROR...");
+//});
+
+//replyService.update(
+//		{
+//			rno : 561,
+//			bno : bnoValue,
+//			reply : "Modified Reply... 완성"
+//		}, function(result){
+//			alert("수정 완료");
+//		}, function(err){
+//			alert("ERROR...");
+//		}
+//);
+
+//replyService.get(561, function(data){
+//	console.log(data);
+//});
+
+</script>
+
+-->
+
+<!-- 
+2022-03-31 임시주석처리 
 <script type="text/javascript">
 
 $(document).ready(function(){
@@ -78,8 +214,11 @@ $(document).ready(function(){
 		operForm.attr("action","/board/list")
 		operForm.submit();
 	});
+	
+	console.log(replyService);
 });
 
 </script>  
+ -->
 <%@include file="../includes/footer.jsp" %>
 

@@ -59,11 +59,21 @@ public class ReplyController {
 	}
 	
 	/*삭제*/
-	@DeleteMapping(value="/{rno}", produces= {MediaType.APPLICATION_XML_VALUE})
+	@DeleteMapping(value="/{rno}", produces= {MediaType.TEXT_PLAIN_VALUE})
 	public ResponseEntity<String> remove(@PathVariable("rno") Long rno){
-		log.info("remove: "+rno);
 		
-		return service.remove(rno) == 1 ? new ResponseEntity<>("success", HttpStatus.OK):new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		ResponseEntity<String> re; 
+		log.info("remove: "+rno);
+		int rst = service.remove(rno);
+		log.info("remove rst: "+rst);
+		if(rst == 1) {
+			re = new ResponseEntity<>("success", HttpStatus.OK);
+			log.info("remove rst: ok");
+		}else {
+			re = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			log.info("remove rst: error");
+		}
+		return re;
 		
 	}
 	
