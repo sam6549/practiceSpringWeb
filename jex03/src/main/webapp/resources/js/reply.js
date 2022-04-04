@@ -23,7 +23,7 @@ var replyService = (function(){
 		})
 	}
 	
-	
+	/* 페이징 처리전
 	console.log("replyService............... getList loading complete");
 	function getList(param, callback){
 		
@@ -44,6 +44,32 @@ var replyService = (function(){
 		});
 		console.log("getList............... end");
 	}
+	*/
+	
+	//페이징처리 후
+	console.log("replyService............... getList loading complete");
+	function getList(param, callback, error){
+		
+		console.log("getList............... start");
+		var bno = param.bno;
+		
+		var page = param.page || 1;
+		
+		$.getJSON("/replies/pages/" + bno + "/" + page + ".json",
+				function(data){
+			if(callback){
+				//callback(data);//댓글목록만 가져오는 경우
+				callback(data.replyCnt, data.list);//댓글 숫자와 목록을 가져오는 경우
+			}
+		}).fail(function(xhr, status, err) {
+			if(error){
+				error();
+			}
+		});
+		console.log("getList............... end");
+	}
+	
+	
 	
 	console.log("replyService............... remove loading complete");
 	function remove(rno, callback, error){
@@ -146,11 +172,9 @@ var replyService = (function(){
 			return [ yy, '/', (mm > 9 ? '' : '0') + mm, '/', (dd > 9 ? '' : '0') + dd ].join('');
 			
 		}
-		
-
 	}
 	
-	
+
 	
 	return {
 		add:add,
