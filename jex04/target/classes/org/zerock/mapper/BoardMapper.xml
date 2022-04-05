@@ -92,9 +92,9 @@
 	<select id="getListWithPaging" resultType="org.zerock.domain.BoardVO">
 	
 		<![CDATA[
-			SELECT BNO, TITLE, CONTENT, WRITER, REGDATE, UPDATEDATE
+			SELECT BNO, TITLE, CONTENT, WRITER, REGDATE, UPDATEDATE, REPLYCNT
 			FROM (SELECT	/*+INDEX_DESC(TBL_BOARD PK_BOARD) */
-							ROWNUM RN, BNO, TITLE, CONTENT, WRITER, REGDATE, UPDATEDATE
+							ROWNUM RN, BNO, TITLE, CONTENT, WRITER, REGDATE, UPDATEDATE, REPLYCNT
 					FROM TBL_BOARD
 				 	WHERE 1=1
 		]]>
@@ -158,4 +158,7 @@
 		  BNO > 0
 	</select>
 	
+	<update id="updateReplyCnt">
+		UPDATE TBL_BOARD SET REPLYCNT = REPLYCNT + #{amount} where bno = #{bno}
+	</update>
 </mapper>
