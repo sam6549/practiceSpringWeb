@@ -272,7 +272,8 @@ $(document).ready(function(){
 			
 			//asis
 			//showList(1);
-			showList(-1);
+			//showList(-1);
+			showList(pageNum);
 		});
 		
 	});
