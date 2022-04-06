@@ -30,24 +30,24 @@ public class ServletConfig implements WebMvcConfigurer{
 		registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
 	}
 	
-//	@Bean(name= "multipartResolver")
-//	public CommonsMultipartResolver getResolver() throws IOException{
-//		CommonsMultipartResolver resolver = new CommonsMultipartResolver();
-//		
-//		//10mb
-//		resolver.setMaxUploadSize(1024 * 1024 * 10);
-//		
-//		//2mb
-//		resolver.setMaxUploadSizePerFile(1024 * 1024 * 2);
-//		
-//		//1mb
-//		resolver.setMaxInMemorySize(1024 * 1024);
-//		
-//		//temp upload
-//		resolver.setUploadTempDir(new FileSystemResource("c:\\upload\\tmp"));
-//		
-//		resolver.setDefaultEncoding("UTF-8");
-//		
-//		return resolver;
-//	}
+	@Bean(name= "multipartResolver")
+	public CommonsMultipartResolver getResolver() throws IOException{
+		CommonsMultipartResolver resolver = new CommonsMultipartResolver();
+		
+		//10mb
+		resolver.setMaxUploadSize(1024 * 1024 * 10);
+		
+		//2mb
+		resolver.setMaxUploadSizePerFile(1024 * 1024 * 2);
+		
+		//1mb
+		resolver.setMaxInMemorySize(1024 * 1024);
+		
+		//temp upload
+		resolver.setUploadTempDir(new FileSystemResource("c:\\upload\\tmp"));
+		
+		resolver.setDefaultEncoding("UTF-8");
+		
+		return resolver;
+	}
 }
