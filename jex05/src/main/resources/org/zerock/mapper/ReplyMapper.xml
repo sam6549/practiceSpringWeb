@@ -21,6 +21,10 @@
 				
 				WHERE RNO = #{rno}
 	</update>
+	
+	<delete id="deleteAll">
+		DELETE FROM TBL_REPLY WHERE BNO = #{bno}
+	</delete>
 
 	<!--  
 	<select id="getListWithPaging" resultType="org.zerock.domain.ReplyVO">

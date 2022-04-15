@@ -4,7 +4,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
     
 <%@include file="../includes/header.jsp" %>
-
+	
             <div class="row">
                 <div class="col-lg-12">
                     <h1 class="page-header">Board Register</h1>
@@ -54,14 +54,17 @@
             			<div class="panel-heading">File Attach</div>
             			<!-- /.panel-heading -->
             			<div class="panel-body">
+            			
             				<div class="form-group uploadDiv">
             					<input type="file" name='uploadFile' multiple>
             				</div>
             				
             				<div class ='uploadResult'>
             					<ul>
+            					
             					</ul>
             				</div>
+            				
             			</div>
             			<!-- end panel-body -->
             		</div>
@@ -81,6 +84,21 @@ $(document).ready(function(e){
 		e.preventDefault();
 		
 		console.log("submit clicked");
+		
+		var str ="";
+		
+		$(".uploadResult ul li").each(function(i,obj){
+			var jobj = $(obj);
+			
+			console.dir(jobj);
+			
+			str+= "<input type='hidden' name='attachList["+i+"].fileName' value='"+jobj.data("filename")+"'>";
+			str+= "<input type='hidden' name='attachList["+i+"].uuid' value='"+jobj.data("uuid")+"'>";
+			str+= "<input type='hidden' name='attachList["+i+"].uploadPath' value='"+jobj.data("path")+"'>";
+			str+= "<input type='hidden' name='attachList["+i+"].fileType' value='"+jobj.data("type")+"'>";
+		});
+		
+		formObj.append(str).submit();
 	});
 	
 
@@ -103,23 +121,21 @@ $(document).ready(function(e){
 	}
 
 	$("input[type='file']").change(function(e){
-		console.log("시작?>");
 		var formData = new FormData();
 		var inputFile = $("input[name='uploadFile']");
 		var files= inputFile[0].files;
 		
 		for(var i = 0 ; i < files.length ; i++){
-			console.log("files[i].name: "+files[i].name);
-			console.log("files[i].size: "+files[i].size);
+			
 			if(!checkExtension(files[i].name, files[i].size)){
-				console.log("오류?>");
 				return false;
 			}
+			
 			formData.append("uploadFile", files[i]);
 		}
 		
 		$.ajax({
-			url: '/uploadAjaxAction',
+			url: '/board/uploadAjaxAction',
 			processData: false,
 			contentType: false,
 			data:formData,
@@ -127,10 +143,111 @@ $(document).ready(function(e){
 			dataType:'json',
 			success: function(result){
 				console.log(result);
-				//showUploadResult(result);//업로드 결과 처리 함수
+				showUploadResult(result);//업로드 결과 처리 함수
 			}
 		});//$.ajax
 		
+	});
+	
+	function showUploadResult(uploadResultArr){
+		if(!uploadResultArr || uploadResultArr.length == 0){return;}
+		
+		var uploadUL = $(".uploadResult ul");
+		
+		var str = "";
+		
+		$(uploadResultArr).each(
+			function(i,obj){
+				//image type 삭제버튼 보여주기
+//				if(obj.image){
+//					var fileCallPath = encodeURIComponent(obj.uploadPath + "/s_" +obj.uuid+"_"+obj.fileName);
+//					console.log("fileCallPath: "+fileCallPath)
+//					str += "<li><div>";
+//					str += "<span> "+obj.fileName+"</span>";
+//					str += "<button type='button' class='btn btn-warning btn-circle'><i class='fa fa-times'></i></button><br>";
+//					str += "<img src='/board/display?fileName="+fileCallPath+"'>";
+//					str += "</div></li>";
+//
+//				}else{
+//					var fileCallPath = encodeURIComponent(obj.uploadPath + "/" +obj.uuid+"_"+obj.fileName);
+//					var fileLink = fileCallPath.replace(new RegExp(/\\/g), "/");
+//					
+//					str += "<li><div>";
+//					str += "<span> "+obj.fileName+"</span>";
+//					str += "<button type='button' class='btn btn-warning btn-circle'><i class='fa fa-times'></i></button><br>";
+//					str += "<img src='/resources/img/attach.png'>";
+//					str += "</div></li>";
+//				}
+				
+				//image type 버튼 누르면 삭제 되는 기능 추가하기
+//				if(obj.image){
+//					var fileCallPath = encodeURIComponent(obj.uploadPath + "/s_" +obj.uuid+"_"+obj.fileName);
+//					str += "<li><div>";
+//					str += "<span> "+obj.fileName+"</span>";
+//					str += "<button type='button' data-file=\'"+fileCallPath+"\' data-type='image' class='btn btn-warning btn-circle'><i class='fa fa-times'></i></button><br>";
+//					str += "<img src='/board/display?fileName="+fileCallPath+"'>";
+//					str += "</div></li>";
+//				}else{
+//					var fileCallPath = encodeURIComponent(obj.uploadPath + "/" +obj.uuid+"_"+obj.fileName);
+//					var fileLink = fileCallPath.replace(new RegExp(/\\/g), "/");
+//					
+//					str += "<span> "+obj.fileName+"</span>";
+//					str += "<button type='button' data-file=\'"+ fileCallPath +"'\ data-type='file' class='btn btn-warning btn-circle'><i class='fa fa-times'></i></button><br>";
+//					str += "<img src='/resources/img/attach.png'>";
+//					str += "</div></li>";				
+//				}
+				
+				//image type 데이터베이스 기능 추가하기
+				if(obj.image){
+					var fileCallPath = encodeURIComponent(obj.uploadPath + "/s_" +obj.uuid+"_"+obj.fileName);
+					str += "<li data-path='"+obj.uploadPath+"'";
+					str += " data-uuid='"+obj.uuid+"' data-filename='"+obj.fileName+"'data-type='"+obj.image+"'";
+					str += " ><div>";
+					str += "<span> "+obj.fileName+"</span>";
+					str += "<button type='button' data-file=\'"+fileCallPath+"\' data-type='image' class='btn btn-warning btn-circle'><i class='fa fa-times'></i></button><br>";
+					str += "<img src='/board/display?fileName="+fileCallPath+"'>";
+					str += "</div></li>";
+					
+				}else{
+					var fileCallPath = encodeURIComponent(obj.uploadPath + "/" +obj.uuid+"_"+obj.fileName);
+					var fileLink = fileCallPath.replace(new RegExp(/\\/g), "/");
+					
+					str += "<li data-path='"+obj.uploadPath+"' data-uuid='"+obj.uuid+"'data-filename='"+obj.fileName+"' data-type='"+obj.image+"' ><div>";
+					str += "<span> "+obj.fileName+"</span>";
+					str += "<button type='button' data-file=\'"+fileCallPath+"\' data-type='image' class='btn btn-warning btn-circle'><i class='fa fa-times'></i></button><br>";
+					str += "<img src='/resources/img/attach.png'>";
+					str += "</div></li>";
+				}
+				
+		});
+		uploadUL.append(str);
+			
+	}
+	
+	
+	//x처리
+	$(".uploadResult").on("click","button", function(e){
+
+		console.log("delete file");
+		
+		var targetFile = $(this).data("file");
+		var type =$(this).data("type");
+		
+		var targetLi = $(this).closest("li");
+		
+		
+		
+		
+		$.ajax({
+			url: '/board/deleteFile',
+			data: {fileName:targetFile, type:type},
+			dataType:'text',
+			type:'POST',
+			success:function(result){
+				alert(result);
+				targetLi.remove();
+			}
+		});//$.ajax
 	});
 });
 
