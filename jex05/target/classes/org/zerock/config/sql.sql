@@ -54,3 +54,24 @@ CREATE TABLE TBL_ATTACH(
 
 ALTER TABLE TBL_ATTACH ADD CONSTRAINT PK_ATTACH PRIMARY KEY (UUID);
 ALTER TABLE TBL_ATTACH ADD CONSTRAINT FF_BOARD_ATTACH FOREIGN KEY (BNO) REFERENCES TBL_BOARD(BNO);
+
+
+
+cron설정
+123456 7
+0*****(*)
+1:seconds(0~59)
+2:minutes(0~59)
+3:hours(0~23)
+4:day(1~31)
+5:months(1~12)
+6:day of week(1~7)
+7:year(optional)
+
+*:모든수
+?:제외
+~:기간
+.:특정시간
+/:시작시간과 반복시간
+L:마지막
+W:가까운 평일
