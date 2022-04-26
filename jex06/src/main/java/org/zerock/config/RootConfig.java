@@ -19,6 +19,7 @@ import com.zaxxer.hikari.HikariDataSource;
 @Configuration
 @ComponentScan(basePackages = "org.zerock.service")
 @ComponentScan(basePackages = "org.zerock.aop")
+@ComponentScan(basePackages = "org.zerock.security")
 
 @MapperScan(basePackages = {"org.zerock.mapper"})
 @EnableAspectJAutoProxy
