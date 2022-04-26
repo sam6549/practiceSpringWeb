@@ -23,7 +23,7 @@
 	</update>
 	
 	<delete id="deleteAll">
-		DELETE FROM TBL_REPLY WHERE BNO = #{bno}
+		DELETE FROM TBL_REPLY WHERE BNO = #{bno} 
 	</delete>
 
 	<!--  
