@@ -218,7 +218,7 @@ $(document).ready(function(){
 		});//end getjson
 	})();//end function
 	
-	
+	//사진 클릭시 확대
 	$(".uploadResult").on("click","li", function(e){
 		console.log("view image");
 		
@@ -231,7 +231,8 @@ $(document).ready(function(){
 			
 		}else{
 			//download
-			selflocation="download?fileName="+path;
+			console.log("path:"+path);
+			self.location="/board/download?fileName="+path;
 		}
 	});
 	
@@ -243,10 +244,16 @@ $(document).ready(function(){
 		
 		$(".bigPicture").html("<img src='/board/display?fileName="+fileCallPath+"'>").animate({width:'100%', height:'100%'}, 1000);
 		
-		//다시 클릭시 닫힘
-		setTimeout(function() {
-			$('.bigPictureWrapper').hide();
-		}, 1000);
+		
+		//클릭하면 사라지기
+		$(".bigPictureWrapper").on("click", function(e){
+			$(".bigPicture").animate({width:'0%', height: '0%'}, 1000);
+			
+			setTimeout(function() {
+				$('.bigPictureWrapper').hide();
+			}, 1000);
+		});
+		
 	}
 	
 	var operForm = $("#operForm");
