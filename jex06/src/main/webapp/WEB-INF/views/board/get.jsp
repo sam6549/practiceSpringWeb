@@ -2,6 +2,7 @@
     pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.springframework.org/security/tags" prefix="sec" %>
     
 <%@include file="../includes/header.jsp" %>
 
@@ -38,10 +39,13 @@
                            		<label>Writer</label>
                            		<input class="form-control" name='writer' value='<c:out value="${board.writer}"/>' readonly="readonly">
                            	</div>
-                           	<button data-oper="modify" class="btn btn-default" >
-                           	<!-- onclick="location.href='/board/modify?bno=<c:out value="${board.bno}"/>'" -->
-                           		Modify
-                           	</button>
+                           	
+                           	<sec:authentication property="principal" var="pinfo"/>
+                           	<sec:authorize access="isAuthenticated()"> 
+                           		<c:if test="${pinfo.username eq board.writer}">
+		                           	<button data-oper="modify" class="btn btn-default" >Modify</button>
+	                        	</c:if>
+	                        </sec:authorize>
                            	<button data-oper="list" class="btn btn-info" >
                            	<!-- onclick="location.href='/board/list'" -->
                            		List
@@ -99,7 +103,9 @@
                         <!-- New Reply button 추가 -->
                         <div class="panel-heading">
                             <i class="fa fa-comments fa-fw"></i>Reply
-                            <button id ='addReplyBtn' class ='btn btn-primary btn-xs pull-right'>New Reply</button>
+                            <sec:authorize access="isAuthenticated()">
+                            	<button id ='addReplyBtn' class ='btn btn-primary btn-xs pull-right'>New Reply</button>
+                        	</sec:authorize>
                         </div>
                         
                         <!-- /.panel-heading -->
@@ -180,7 +186,7 @@
             
 
 <!-- 20220413 -->
-<script type="text/javascript" src="/resources/js/reply.js"></script>
+<script type="text/javascript" src="/resources/js/reply.js?ver=1"></script>
 <script>
 $(document).ready(function(){
 	console.log("/board/getAttachList 시작");
@@ -292,6 +298,8 @@ $(document).ready(function(){
 					var str="";
 					
 					if(list == null || list.length == 0){
+						replyUL.html(str);
+						replyPageFooter.html(str);
 						return;
 					}
 					
@@ -317,10 +325,22 @@ $(document).ready(function(){
 	var modalRemoveBtn = $("#modalRemoveBtn");
 	var modalRegisterBtn = $("#modalRegisterBtn");
 	
+	var replyer = null;
+	<sec:authorize access="isAuthenticated()">
+		replyer = '<sec:authentication property="principal.username"/>';
+	</sec:authorize>
+	
+	//security 추가
+	var csrfHeaderName = "${_csrf.headerName}";
+	var csrfTokenValue="${_csrf.token}";
+	
+	
 	
 	//New Reply 버튼을 누르면 댓글 modal open
 	$("#addReplyBtn").on("click", function(e){
 		modal.find("input").val("");
+		modal.find("input[name='replyer']").val(replyer);
+		
 		modalInputReplyDate.closest("div").hide();
 		modal.find("button[id != 'modalCloseBtn']").hide();
 		
@@ -328,6 +348,10 @@ $(document).ready(function(){
 		$(".modal").modal("show");
 	});
 	
+	//Ajax spring Security Header
+	$(document).ajaxSend(function(e, xhr, options) {
+		xhr.setRequestHeader(csrfHeaderName, csrfTokenValue);
+	});
 	
 	//modal의 register 버튼을 누르면 등록이 된다.
 	modalRegisterBtn.on("click",function(e){
@@ -375,11 +399,26 @@ $(document).ready(function(){
 	
 	//modal의 modify 버튼을 누르면 등록이 된다.
 	modalModBtn.on("click",function(e){
-		
+		var originalReplyer = modalInputReplyer.val();
 		var reply = {
 				rno:modal.data("rno"),
-				reply:modalInputReply.val()
+				reply:modalInputReply.val(),
+				replyer: originalReplyer
 		};
+		
+		if(!replyer){
+			alert("로그인후 수정이 가능합니다.");
+			modal.modal("hide");
+			return;
+		}
+		
+		console.log("Original Replyer: " + originalReplyer);
+		
+		if(replyer != originalReplyer){
+			alert("자신이 작성한 댓글만 수정이 가능합니다.");
+			modal.modal("hide");
+			return;
+		}
 		
 		replyService.update(reply,function(result){
 			alert(result);
@@ -394,7 +433,27 @@ $(document).ready(function(){
 		
 		var rno = modal.data("rno");
 		
-		replyService.remove(rno,function(result){
+		console.log("RNO: "+rno);
+		console.log("REPLYER: "+replyer);
+		
+		if(!replyer){
+			alert("로그인후 삭제가 가능합니다.");
+			modal.modal("hide");
+			return;
+		}
+		
+		var originalReplyer = modalInputReplyer.val();
+		
+		console.log("Original Replyer: " + originalReplyer); //댓글의 원래 작성자
+		
+		if(replyer != originalReplyer){
+			alert("자신이 작성한 댓글만 삭제가 가능합니다.");
+			modal.modal("hide");
+			return;
+		}
+		
+		
+		replyService.remove(rno, originalReplyer, function(result){
 			alert(result);
 			modal.modal("hide");
 			

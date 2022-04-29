@@ -15,6 +15,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
+import org.springframework.security.web.csrf.CsrfFilter;
+import org.springframework.web.filter.CharacterEncodingFilter;
 import org.zerock.security.CustomLoginSuccessHandler;
 import org.zerock.security.CustomUserDetailsService;
 
@@ -88,10 +90,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 		.antMatchers("/sample/admin").access("hasRole('ROLE_ADMIN')")
 		.antMatchers("/sample/member").access("hasRole('ROLE_MEMBER')");
 		
-		http.formLogin().loginPage("/customLogin").loginProcessingUrl("/login").successHandler(loginSuccessHandler());
+		//http.formLogin().loginPage("/customLogin").loginProcessingUrl("/login").successHandler(loginSuccessHandler());
+		http.formLogin().loginPage("/customLogin").loginProcessingUrl("/login");
 		http.logout().logoutUrl("/customLogout").invalidateHttpSession(true).deleteCookies("remember-me","JSESSION_ID");
 		
 		http.rememberMe().key("zerock").tokenRepository(persistentTokenRepository()).tokenValiditySeconds(604800);
+		
+		CharacterEncodingFilter filter = new CharacterEncodingFilter();
+        filter.setEncoding("UTF-8");
+        filter.setForceEncoding(true);
+        http.addFilterBefore(filter,CsrfFilter.class);
 		
 	}
 	

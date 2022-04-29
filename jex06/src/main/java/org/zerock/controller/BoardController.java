@@ -20,6 +20,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.FileCopyUtils;
@@ -50,17 +51,13 @@ import net.coobird.thumbnailator.Thumbnailator;
 public class BoardController {
 	private BoardService service;
 	
-//	@GetMapping("/list")
-//	public void list(Model model) {
-//		log.info("list");
-//		model.addAttribute("list", service.getList());
-//	}
+
 	
 	@GetMapping("/list")
 	public void list(Criteria cri, Model model) {
 		log.info("list: "+ cri);
 		model.addAttribute("list", service.getList(cri));
-		//model.addAttribute("pageMaker", new PageDTO(cri,123));
+
 		
 		int total = service.getTotal(cri);
 		
@@ -70,6 +67,7 @@ public class BoardController {
 	}
 	
 	@PostMapping("/register")
+	@PreAuthorize("isAuthenticated()")
 	public String register(BoardVO board, RedirectAttributes rttr) {
 		log.info("============================");
 		log.info("register: "+ board);
@@ -86,6 +84,7 @@ public class BoardController {
 	}
 	
 	@GetMapping("/register")
+	@PreAuthorize("isAuthenticated()")
 	public void register() {
 		log.info("register page ");
 
@@ -97,19 +96,8 @@ public class BoardController {
 		model.addAttribute("board", service.get(bno));
 	}
 	
-//	@PostMapping("/modify")
-//	public String modify(BoardVO board, RedirectAttributes rttr) {
-//		log.info("modify: "+board);
-//		
-//		if(service.modify(board)) {
-//			rttr.addFlashAttribute("result", "success");
-//			
-//		}
-//		
-//		return "redirect:/board/list";
-//	}
-	
-	//
+
+	@PreAuthorize("principal.username == #board.writer")
 	@PostMapping("/modify")
 	public String modify(BoardVO board, @ModelAttribute("cri") Criteria cri, RedirectAttributes rttr) {
 		log.info("modify: "+board);
@@ -119,51 +107,15 @@ public class BoardController {
 			
 		}
 		
-		rttr.addAttribute("pageNum", cri.getPageNum());
-		rttr.addAttribute("amount", cri.getAmount());
-		//추가
-		rttr.addAttribute("type", cri.getType());
-		rttr.addAttribute("keyword", cri.getKeyword());
-		
-		return "redirect:/board/list";
 		
 		//자바스크립트 안될 경우에 추가할 수 있음
-		//return "redirect:/board/list" + cri.getListLink();
+		return "redirect:/board/list" + cri.getListLink();
 	}
 	
-//	@PostMapping("/remove")
-//	public String remove(@RequestParam("bno") Long bno, RedirectAttributes rttr) {
-//		log.info("remove... bno["+bno+"]");
-//		
-//		if(service.remove(bno)) {
-//			rttr.addAttribute("result", "success");
-//			
-//		}
-//		return "redirect:/board/list";
-//	}
 	
-//	@PostMapping("/remove")
-//	public String remove(@RequestParam("bno") Long bno, @ModelAttribute("cri") Criteria cri, RedirectAttributes rttr) {
-//		log.info("remove... bno["+bno+"]");
-//		
-//		if(service.remove(bno)) {
-//			rttr.addAttribute("result", "success");
-//			
-//		}
-//		rttr.addAttribute("pageNum", cri.getPageNum());
-//		rttr.addAttribute("amount", cri.getAmount());
-//		//추가
-//		rttr.addAttribute("type", cri.getType());
-//		rttr.addAttribute("keyword", cri.getKeyword());
-//		
-//		return "redirect:/board/list";
-//		
-//		//자바스크립트 안될 경우에 추가할 수 있음
-//		//return "redirect:/board/list" + cri.getListLink();
-//	}
-	
+	@PreAuthorize("principal.username == #writer")
 	@PostMapping("/remove")
-	public String remove(@RequestParam("bno") Long bno, @ModelAttribute("cri") Criteria cri, RedirectAttributes rttr) {
+	public String remove(@RequestParam("bno") Long bno, @ModelAttribute("cri") Criteria cri, RedirectAttributes rttr, String writer) {
 		log.info("remove : " + bno);
 		List<BoardAttachVO> attachList = service.getAttachList(bno);
 		
@@ -178,6 +130,7 @@ public class BoardController {
 		return "redirect:/board/list"+cri.getListLink();
 	}
 	
+	@PreAuthorize("isAuthenticated()")
 	@PostMapping(value="/uploadAjaxAction", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	@ResponseBody
 	public ResponseEntity<List<AttachFileDTO>> uploadAjaxPost(MultipartFile[] uploadFile){
@@ -238,6 +191,7 @@ public class BoardController {
 		
 	}
 	
+	@PreAuthorize("isAuthenticated()")
 	@PostMapping("/deleteFile")
 	@ResponseBody
 	public ResponseEntity<String> deleteFile(String fileName, String type){

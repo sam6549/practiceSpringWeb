@@ -72,11 +72,16 @@ var replyService = (function(){
 	
 	
 	console.log("replyService............... remove loading complete");
-	function remove(rno, callback, error){
+	function remove(rno, replyer, callback, error){
 		console.log("remove............... start");
+		console.log("replyer..............."+replyer);
 		$.ajax({
 			type : 'delete',
 			url : '/replies/' + rno,
+			
+			data: JSON.stringify({rno:rno, replyer:replyer}),
+			contentType: "application/json; charset=utf-8",
+			
 			success : function(deleteResult, status, xhr){
 				console.log("deleteResult..............."+deleteResult);
 				console.log("status....................."+status);
